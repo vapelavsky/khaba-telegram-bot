@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.types import User as TgUser
 
-from db.models.users_events import User
+from db.models.user import User
 
 
 class RegistrationMiddleware(BaseMiddleware):

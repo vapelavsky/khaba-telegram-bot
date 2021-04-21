@@ -5,8 +5,7 @@ admin_start_kb = InlineKeyboardMarkup(
         [InlineKeyboardButton('Додати користувача', callback_data='user_creation'),
          InlineKeyboardButton('Переглянути звіти на факультетах', callback_data='activity_report'),
          InlineKeyboardButton('Вилучити користувача', callback_data='user_delete'),
-         InlineKeyboardButton('Змінити пароль користувача', callback_data='user_password_change'),
-         InlineKeyboardButton('Список користувачів', callback_data='user_list')]
+         InlineKeyboardButton('Список користувачів', callback_data='list_user')]
     ],
     resize_keyboard=False)
 

@@ -21,24 +21,6 @@ class User(TimedBaseModel):
 
     @classmethod
     async def user_data(cls, password):
-        usr = await User.select('name', 'faculty').\
+        usr = await User.select('id', 'name', 'faculty'). \
             where(User.password == hashlib.md5(password.encode("utf-8")).hexdigest()).gino.first()
         return usr
-
-
-class Event(TimedBaseModel):
-    __tablename__ = 'events'
-
-    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
-
-    event_name = db.Column(db.String(50))
-    user = db.Column(db.Integer, db.ForeignKey('users.id'))
-
-
-class Photos(TimedBaseModel):
-    __tablename__ = 'photos'
-
-    id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
-
-    event = db.Column(db.Integer, db.ForeignKey('events.id'))
-    photo_path = db.Column(db.String(255))

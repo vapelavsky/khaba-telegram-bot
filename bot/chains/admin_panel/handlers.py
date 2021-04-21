@@ -9,7 +9,9 @@ from bot.chains.admin_panel.kb import admin_start_kb, faculty_kb
 from bot.chains.admin_panel.state import AdminPanel
 from bot.config import ADMIN_CHAT_ID
 from bot.core import dp, bot
-from db.models.users_events import User, Event, Photos
+from db.models.user import User
+from db.models.events import Event
+from db.models.photos import Photos
 
 
 @dp.callback_query_handler(lambda x: x.data == 'cancel_activity', state='*')
@@ -59,10 +61,11 @@ async def creating_user(msg: types.Message, state: FSMContext):
                              password=hashlib.md5(data.get('password').encode("utf-8")).hexdigest()
                              )
     await msg.answer("Молодець! Юзера створено. \n\n Може ще чимось допомогти?", reply_markup=admin_start_kb)
+    await state.finish()
 
 
 @dp.callback_query_handler(lambda x: x.data == 'activity_report', state='*')
-async def name_head(c: types.CallbackQuery, state: FSMContext):
+async def faculty_report(c: types.CallbackQuery, state: FSMContext):
     await c.message.delete_reply_markup()
     await AdminPanel.wait_faculty_event.set()
     await bot.send_message(c.from_user.id, "Обери факультет, на якому ти хочеш переглянути звіт",
@@ -70,16 +73,26 @@ async def name_head(c: types.CallbackQuery, state: FSMContext):
 
 
 @dp.callback_query_handler(lambda x: x.data == 'user_delete', state='*')
-async def name_head(c: types.CallbackQuery, state: FSMContext):
+async def delete_user_start(c: types.CallbackQuery, state: FSMContext):
     await c.message.delete_reply_markup()
     await AdminPanel.wait_name_delete.set()
     await bot.send_message(c.from_user.id, "Напиши ПІБ користувача, якого ти хочеш вилучити.")
 
 
 @dp.message_handler(state=AdminPanel.wait_name_delete)
-async def creating_user(msg: types.Message, state: FSMContext):
+async def deleting(msg: types.Message, state: FSMContext):
     await state.update_data({'name': msg.text})
     data = await state.get_data()
     await User.delete.where(User.name == data.get('name')).gino.status()
     await msg.answer("Шкода, що ти видалив юзера. Напевно, так треба."
                      "Х\n\n Може ще чимось допомогти?", reply_markup=admin_start_kb)
+    await state.finish()
+
+
+@dp.callback_query_handler(lambda x: x.data == 'list_user', state='*')
+async def get_list(c: types.CallbackQuery, state: FSMContext):
+    users = await User.query.gino.all()
+    message_pattern = [f'{users[i].id}. {users[i].name}, {users[i].faculty} \n' for i in range(len(users))]
+
+    await bot.send_message(c.from_user.id, f'{"".join(message_pattern)}\n\n '
+                                           f'Чи можу ще чимось допомогти?', reply_markup=admin_start_kb)

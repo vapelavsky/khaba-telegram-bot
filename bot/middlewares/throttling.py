@@ -84,7 +84,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         delta = throttled.rate - throttled.delta
 
         # Prevent flooding
-        if throttled.exceeded_count <= 10:
+        if throttled.exceeded_count <= 0:
             await message.reply('Не поспішай, не встигаю читати 😔')
 
         # Sleep.
