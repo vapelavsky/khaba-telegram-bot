@@ -1,3 +1,5 @@
 import os
 
-DocsPath = os.path.join('/users/kyrylo.balatsenko/PycharmProjects/sgassistant/data', 'docs.json')
+from db.config import BASE_DIR
+
+DocsPath = os.path.join(BASE_DIR, 'data/docs.json')
