@@ -5,5 +5,5 @@ class AdminPanel(StatesGroup):
     wait_name = State()
     wait_faculty = State()
     wait_password = State()
-    wait_faculty_event = State()
+    wait_faculty_report = State()
     wait_name_delete = State()

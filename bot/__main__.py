@@ -8,7 +8,6 @@ from db.config import POSTGRES_URI
 
 from bot.chains import *
 
-
 async def on_startup(dp: Dispatcher):
     logging.info("Setup PostgreSQL Connection")
     await db.set_bind(POSTGRES_URI)

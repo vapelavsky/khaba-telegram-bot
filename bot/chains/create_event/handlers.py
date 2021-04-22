@@ -2,13 +2,11 @@ import re
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import User as TgUser
 
 from bot import files
 from bot.chains.base.kb import start_kb
 from bot.chains.create_event.kb import cancel_kb
 from bot.chains.create_event.state import CreateEvent
-from bot.config import ADMIN_CHAT_ID
 from bot.core import dp, bot
 from bot.tree import DocsPath
 

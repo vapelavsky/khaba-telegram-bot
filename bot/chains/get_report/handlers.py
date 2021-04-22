@@ -1,3 +1,5 @@
+import os
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 
@@ -6,10 +8,10 @@ from bot.chains.get_report.kb import choose, cancel_kb
 from bot.chains.get_report.state import ReportEvents
 from bot.chains.record_event.state import RecordEvent
 from bot.core import dp, bot
+from db.config import BASE_DIR
 from db.models.user import User
-from presentation.generator import create_presentation
+from presentation.presentation_creator import create_presentation
 from db.models.events import Event
-from db.models.photos import Photos
 
 
 @dp.callback_query_handler(lambda x: x.data == 'event_report_cancel', state='*')
@@ -46,19 +48,17 @@ async def report_event_choose(msg: types.Message, state: FSMContext):
 
 
 @dp.callback_query_handler(lambda x: x.data == 'event_report_approve', state='*')
-async def generate(c: types.CallbackQuery, state: FSMContext):
+async def generate_presentation(c: types.CallbackQuery, state: FSMContext):
+    await c.message.delete_reply_markup()
     data = await state.get_data()
     events = await Event.query.where(User.id == data.get('user')).gino.all()
-    image = await events[0].photo
-    print(image)
-    event_photos_proc = [await Photos.select('photo_path').where(Photos.parent_id == event_name[i]).gino.all()
-                         for i in range(len(event_name))]
-    event_photos = {f'{event_name[i]}': [str(event_photos_proc[i][k]).strip('\'(,)')
-                                         for k in range(len(event_photos_proc[i]))]
-                    for i in range(len(event_name))}
-    print(event_photos)
-    print(event_photos)
-    print(len(event_photos.get('Іюнька')))
-    print(event_photos.get('Іюнька'))
-    for i in range(len(event_name)):
-        create_presentation(event_name, event_photos.get(f'{event_name[i]}'), data.get('faculty'))
+    create_presentation([events[k].event_name for k in range(len(events))],
+                        [await events[j].photo for j in range(len(events))],
+                        data.get('faculty'))
+    pres_file = open(os.path.join(BASE_DIR, f'presentations/{data.get("faculty")}_report.pptx'), "rb")
+    await bot.send_message(c.from_user.id, "В тебе дуже круто виходить організовувати заходи! \n\n"
+                                           "Тримай презентацію та приходь до мене ще ;)")
+    await bot.send_document(c.from_user.id, pres_file)
+    await state.finish()
+
+

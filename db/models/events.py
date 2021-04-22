@@ -1,6 +1,7 @@
 from db.core import db
 from db.models.base import TimedBaseModel
 from .photos import Photos
+from .user import User
 
 
 class Event(TimedBaseModel):
@@ -18,9 +19,5 @@ class Event(TimedBaseModel):
 
     @property
     async def photo(self):
-        return await Photos.query.where(Photos.parent_id == self.id).gino.all()
-
-    @photo.setter
-    async def add_photo(self, photo):
-        self._photo.add(photo)
-
+        image = await Photos.select('photo_path').where(Photos.parent_id == self.id).gino.all()
+        return [image[i].photo_path for i in range(len(image))]

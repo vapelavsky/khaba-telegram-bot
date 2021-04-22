@@ -54,9 +54,10 @@ async def record_event_name(msg: types.Message, state: FSMContext):
     await state.update_data({'event_name': msg.text})
     answer = await msg.answer(f'Надішли мені перше фото цього заходу!',
                               reply_markup=cancel_record)
-    await Event.create(event_name=msg.text,
-                       user=data.get("user"))
-    await state.update_data({'message': answer})
+    event = await Event.create(event_name=msg.text,
+                               user=data.get("user"))
+    await state.update_data({'message': answer,
+                             'event_id': event.id})
     await RecordEvent.wait_event_photos.set()
 
 
@@ -68,8 +69,8 @@ async def event_photos(msg: types.Message, state: FSMContext):
     await msg.photo[-1].download(media_path)
     answer = await msg.answer('Дякую мені за це фото! Надішли мені ще одне або натисни кнопку "Готово"',
                               reply_markup=done_kb)
-    await Photos.create(event=data.get('event_name'),
-                        photo_path=media_path)
+    await Photos.create(photo_path=media_path,
+                        parent_id=data.get('event_id'))
     await state.update_data({'message': answer})
     await RecordEvent.wait_event_photos.set()
 
