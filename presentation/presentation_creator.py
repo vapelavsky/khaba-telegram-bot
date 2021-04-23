@@ -23,8 +23,8 @@ def create_presentation(name, image_list, faculty):
             height = Inches(3)
             img = slide.shapes.add_picture(image, left, top, width, height)
 
-    prs.save(os.path.join(BASE_DIR, f'presentations/{faculty}_report.pptx'))
+    prs.save(os.path.join(BASE_DIR, f"presentations/{faculty}_report.pptx"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.worker_main()

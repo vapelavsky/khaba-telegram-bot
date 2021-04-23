@@ -18,9 +18,9 @@ def rate_limit(limit: int, key=None):
     """
 
     def decorator(func):
-        setattr(func, 'throttling_rate_limit', limit)
+        setattr(func, "throttling_rate_limit", limit)
         if key:
-            setattr(func, 'throttling_key', key)
+            setattr(func, "throttling_key", key)
         return func
 
     return decorator
@@ -31,7 +31,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     Simple middleware
     """
 
-    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
+    def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix="antiflood_"):
         self.rate_limit = limit
         self.prefix = key_prefix
         super(ThrottlingMiddleware, self).__init__()
@@ -50,8 +50,10 @@ class ThrottlingMiddleware(BaseMiddleware):
         dispatcher = Dispatcher.get_current()
         # If handler was configured, get rate limit and key from handler
         if handler:
-            limit = getattr(handler, 'throttling_rate_limit', self.rate_limit)
-            key = getattr(handler, 'throttling_key', f"{self.prefix}_{handler.__name__}")
+            limit = getattr(handler, "throttling_rate_limit", self.rate_limit)
+            key = getattr(
+                handler, "throttling_key", f"{self.prefix}_{handler.__name__}"
+            )
         else:
             limit = self.rate_limit
             key = f"{self.prefix}_message"
@@ -76,7 +78,9 @@ class ThrottlingMiddleware(BaseMiddleware):
         handler = current_handler.get()
         dispatcher = Dispatcher.get_current()
         if handler:
-            key = getattr(handler, 'throttling_key', f"{self.prefix}_{handler.__name__}")
+            key = getattr(
+                handler, "throttling_key", f"{self.prefix}_{handler.__name__}"
+            )
         else:
             key = f"{self.prefix}_message"
 
@@ -85,7 +89,7 @@ class ThrottlingMiddleware(BaseMiddleware):
 
         # Prevent flooding
         if throttled.exceeded_count <= 10:
-            await message.reply('Не поспішай, не встигаю читати 😔')
+            await message.reply("Не поспішай, не встигаю читати 😔")
 
         # Sleep.
         await asyncio.sleep(delta)
@@ -95,4 +99,4 @@ class ThrottlingMiddleware(BaseMiddleware):
 
         # If current message is not last with current key - do not send message
         if thr.exceeded_count == throttled.exceeded_count:
-            await message.reply('Все, дочитав')
+            await message.reply("Все, дочитав")

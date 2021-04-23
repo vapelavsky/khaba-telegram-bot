@@ -5,7 +5,7 @@ from aiogram.utils.executor import Executor
 from bot.config import TELEGRAM_BOT_TOKEN
 from middlewares.throttling import ThrottlingMiddleware
 
-bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode='HTML')
+bot = Bot(token=TELEGRAM_BOT_TOKEN, parse_mode="HTML")
 
 dp = Dispatcher(bot=bot, storage=MemoryStorage())
 

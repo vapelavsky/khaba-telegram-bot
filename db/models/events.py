@@ -5,7 +5,7 @@ from .user import User
 
 
 class Event(TimedBaseModel):
-    __tablename__ = 'events'
+    __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True, index=True, unique=True)
 
@@ -19,5 +19,9 @@ class Event(TimedBaseModel):
 
     @property
     async def photo(self):
-        image = await Photos.select('photo_path').where(Photos.parent_id == self.id).gino.all()
+        image = (
+            await Photos.select("photo_path")
+            .where(Photos.parent_id == self.id)
+            .gino.all()
+        )
         return [image[i].photo_path for i in range(len(image))]

@@ -22,5 +22,4 @@ class RegistrationMiddleware(BaseMiddleware):
         """
         tg_user = TgUser().get_current()
         if not await User.exist(tg_user):
-            await User.create(id=tg_user,
-                              locale=tg_user.locale.language)
+            await User.create(id=tg_user, locale=tg_user.locale.language)
