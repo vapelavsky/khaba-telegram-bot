@@ -8,6 +8,7 @@ from bot.chains.get_report.kb import choose, cancel_kb
 from bot.chains.get_report.state import ReportEvents
 from bot.chains.record_event.state import RecordEvent
 from bot.core import dp, bot
+from db import Photos
 from db.config import BASE_DIR
 from db.models.user import User
 from presentation.presentation_creator import create_presentation
@@ -62,7 +63,14 @@ async def report_event_choose(msg: types.Message, state: FSMContext):
 async def generate_presentation(c: types.CallbackQuery, state: FSMContext):
     await c.message.delete_reply_markup()
     data = await state.get_data()
-    events = await Event.query.where(User.id == data.get("user")).gino.all()
+    # events = await Event.query.where(User.id == data.get("user")).gino.all()
+
+    # TODO: test query with where clause
+    query = Photos.outerjoin(Event).select().where(User.id == data.get("user"))
+    events = await query.gino.load(
+        Event.distinct(Event.id).load(add_photo=Photos)).all()
+    print(events[0].photos)
+    # TODO: change create_presentation logic for using only Event objects and faculty
     create_presentation(
         [events[k].event_name for k in range(len(events))],
         [await events[j].photo for j in range(len(events))],

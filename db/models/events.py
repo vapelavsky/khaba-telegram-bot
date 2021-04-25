@@ -15,13 +15,22 @@ class Event(TimedBaseModel):
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self._photo = set()
+        self._photos = set()
 
     @property
-    async def photo(self):
-        image = (
-            await Photos.select("photo_path")
-            .where(Photos.parent_id == self.id)
-            .gino.all()
-        )
-        return [image[i].photo_path for i in range(len(image))]
+    def photos(self):
+        return self._photos
+
+    @photos.setter
+    def add_photo(self, photo):
+        self._photos.add(photo)
+
+
+    # @property
+    # async def photo(self):
+    #     image = (
+    #         await Photos.select("photo_path")
+    #         .where(Photos.parent_id == self.id)
+    #         .gino.all()
+    #     )
+    #     return [image[i].photo_path for i in range(len(image))]
